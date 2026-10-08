@@ -2,7 +2,7 @@ const menu = document.querySelector('[data-menu]');
 const links = document.querySelector('[data-links]');
 menu?.addEventListener('click', () => links?.classList.toggle('open'));
 
-const pageRoutes = { '#about': '/about', '#skills': '/skills', '#projects': '/projects', '#services': '/services', '#journey': '/experience', '#contact': '/contact' };
+const pageRoutes = { '#about': '/about-us', '#skills': '/skills', '#projects': '/projects', '#services': '/services', '#journey': '/experience', '#contact': '/contact' };
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
     const destination = pageRoutes[link.getAttribute('href')];
     if (destination) link.addEventListener('click', (event) => { event.preventDefault(); window.location.href = destination; });

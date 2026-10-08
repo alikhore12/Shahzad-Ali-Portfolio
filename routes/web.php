@@ -98,7 +98,8 @@ Route::get('/profile-favicon.svg', function () {
 Route::get('/', [App\Http\Controllers\PortfolioController::class, 'home'])->name('home');
 
 // Portfolio pages
-Route::get('/about', [App\Http\Controllers\PortfolioController::class, 'about'])->name('about');
+Route::redirect('/about', '/about-us');
+Route::get('/about-us', [App\Http\Controllers\PortfolioController::class, 'about'])->name('about');
 Route::get('/skills', [App\Http\Controllers\PortfolioController::class, 'skills'])->name('skills');
 Route::get('/skills/{slug}', [App\Http\Controllers\PortfolioController::class, 'skillDetail'])->name('skills.show');
 Route::get('/services', [App\Http\Controllers\PortfolioController::class, 'services'])->name('services');
