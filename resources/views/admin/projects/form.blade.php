@@ -31,7 +31,7 @@
 
                 <x-admin.textarea name="features" label="Key features" :value="$featuresValue" :rows="3" placeholder="Drag and drop uploads&#10;Role-based access" hint="One feature per line" optional />
 
-                <x-admin.input name="live_url" label="Live URL" :value="$project?->live_url" placeholder="https://example.com" optional />
+                <x-admin.input name="live_url" label="Live URL" :value="$project?->live_url" placeholder="https://shahzadlabs.com" optional />
 
                 <x-admin.upload name="image" label="Cover image" :current="$project?->image_url" />
 

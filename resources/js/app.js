@@ -125,3 +125,32 @@ document.querySelectorAll('.detail-footer, .footer').forEach((footer) => {
     whatsapp.textContent = 'WhatsApp ↗';
     heading.parentElement.appendChild(whatsapp);
 });
+
+const statObserver = new IntersectionObserver((entries) => entries.forEach((entry) => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target; statObserver.unobserve(el);
+    const target = Number(el.dataset.count) || 0; const suffix = el.dataset.suffix || '';
+    const start = performance.now(); const duration = 1600;
+    const tick = (now) => { const p = Math.min((now - start) / duration, 1); el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + (p === 1 ? suffix : ''); if (p < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+}), { threshold: 0.4 });
+document.querySelectorAll('.stat-num').forEach((el) => statObserver.observe(el));
+
+document.querySelectorAll('.spotlight').forEach((card) => {
+    card.addEventListener('mousemove', (event) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (event.clientX - rect.left) + 'px');
+        card.style.setProperty('--my', (event.clientY - rect.top) + 'px');
+    });
+});
+
+document.querySelectorAll('.flow-node').forEach((node) => {
+    const setHot = (on) => {
+        const links = (node.dataset.links || '').split(',');
+        document.querySelectorAll('.flow-path').forEach((path) => path.classList.toggle('hot', on && links.includes(path.dataset.link)));
+    };
+    node.addEventListener('mouseenter', () => setHot(true));
+    node.addEventListener('mouseleave', () => setHot(false));
+    node.addEventListener('focus', () => setHot(true));
+    node.addEventListener('blur', () => setHot(false));
+});
