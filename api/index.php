@@ -38,8 +38,16 @@ $_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 // Copy bootstrap cache manifests to writable /tmp
 $sourcePackages = __DIR__ . '/../bootstrap/cache/packages.php';
 $targetPackages = '/tmp/bootstrap/cache/packages.php';
-if (!file_exists($targetPackages) && file_exists($sourcePackages)) {
-    @copy($sourcePackages, $targetPackages);
+if (file_exists($sourcePackages)) {
+    $packages = @require $sourcePackages;
+    if (is_array($packages)) {
+        foreach ($packages as $pkg => $cfg) {
+            if (isset($cfg['providers'])) {
+                $packages[$pkg]['providers'] = array_values(array_filter($cfg['providers'], fn($p) => class_exists($p)));
+            }
+        }
+        @file_put_contents($targetPackages, '<?php return ' . var_export($packages, true) . ';');
+    }
 }
 putenv("APP_PACKAGES_CACHE={$targetPackages}");
 $_ENV['APP_PACKAGES_CACHE'] = $targetPackages;
@@ -47,8 +55,23 @@ $_SERVER['APP_PACKAGES_CACHE'] = $targetPackages;
 
 $sourceServices = __DIR__ . '/../bootstrap/cache/services.php';
 $targetServices = '/tmp/bootstrap/cache/services.php';
-if (!file_exists($targetServices) && file_exists($sourceServices)) {
-    @copy($sourceServices, $targetServices);
+if (file_exists($sourceServices)) {
+    $services = @require $sourceServices;
+    if (is_array($services)) {
+        if (isset($services['providers'])) {
+            $services['providers'] = array_values(array_filter($services['providers'], fn($p) => class_exists($p)));
+        }
+        if (isset($services['eager'])) {
+            $services['eager'] = array_values(array_filter($services['eager'], fn($p) => class_exists($p)));
+        }
+        if (isset($services['deferred'])) {
+            $services['deferred'] = array_filter($services['deferred'], fn($p) => class_exists($p));
+        }
+        if (isset($services['when'])) {
+            $services['when'] = array_filter($services['when'], fn($p) => class_exists($p));
+        }
+        @file_put_contents($targetServices, '<?php return ' . var_export($services, true) . ';');
+    }
 }
 putenv("APP_SERVICES_CACHE={$targetServices}");
 $_ENV['APP_SERVICES_CACHE'] = $targetServices;
