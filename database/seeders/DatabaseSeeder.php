@@ -25,7 +25,21 @@ class DatabaseSeeder extends Seeder
         );
 
         // ── Projects ────────────────────────────────────────────────
-        // Projects are not pre-seeded; they are managed dynamically through the Admin Dashboard.
+        Project::updateOrCreate(
+            ['slug' => 'cv-bulder'],
+            [
+                'title'       => 'CV-BULDER',
+                'description' => "Project Description: CV-BUILDER\n\n📌 Project Overview:\nCV-BUILDER is an intuitive, modern, full-stack resume engineering application that empowers professionals to craft, customize, and export ATS-optimized resumes and CVs with real-time live preview and high-quality PDF generation.",
+                'image'       => 'images/projects/cv-builder.jpg',
+                'tech_stack'  => ['HTML', 'CSS', 'JS', 'Laravel', 'PHP'],
+                'live_url'    => 'https://cv-bulder-livid.vercel.app/cv-builder',
+                'github_url'  => 'https://github.com/alikhore12',
+                'category'    => 'laravel',
+                'metric'      => 'Live PDF Generation',
+                'order'       => 1,
+                'is_featured' => true,
+            ]
+        );
 
         // ── Technical Skills & Stack ─────────────────────────────────
         $skills = [
@@ -61,7 +75,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // ── Site Branding Settings ──────────────────────────────────
-        $defaultBrandImg = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80';
+        $defaultBrandImg = 'branding/FNz0gHAE6iCkOeNGW4h1R0Xl6BVtbLMccUYR9gtp.png';
         \App\Models\Setting::updateOrCreate(['key' => 'hero_image'], ['value' => $defaultBrandImg]);
         \App\Models\Setting::updateOrCreate(['key' => 'site_logo'], ['value' => $defaultBrandImg]);
         \App\Models\Setting::updateOrCreate(['key' => 'favicon'], ['value' => $defaultBrandImg]);

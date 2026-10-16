@@ -91,6 +91,10 @@ class Project extends Model
             return $this->image;
         }
 
+        if ($this->image && str_starts_with($this->image, 'images/')) {
+            return asset($this->image);
+        }
+
         return $this->image
             ? asset('storage/' . $this->image)
             : asset('images/project-placeholder.svg');
