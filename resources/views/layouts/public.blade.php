@@ -62,7 +62,7 @@
             {{-- Logo with Dynamic Image (Round Shape) --}}
             <a href="{{ route('home') }}" class="flex items-center gap-3 group">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border border-brand-500/40 ring-2 ring-brand-500/20 bg-surface-900 transition-all duration-300 group-hover:ring-brand-400/50 shadow-md">
-                    <img src="{{ $siteSettings['site_logo_url'] }}" alt="Logo" class="w-full h-full object-cover rounded-full">
+                    <img src="{{ $siteSettings['site_logo_url'] }}" alt="Logo" onerror="this.onerror=null;this.src='{{ asset('images/shahzad-ali.png') }}';" class="w-full h-full object-cover rounded-full">
                 </div>
                 <span class="font-display text-lg font-bold text-white tracking-tight">Shahzad<span class="text-brand-400">Labs</span></span>
             </a>

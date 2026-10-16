@@ -111,6 +111,7 @@
                                 <div class="w-full h-full rounded-full overflow-hidden bg-surface-900 relative shadow-inner">
                                     <img src="{{ $siteSettings['hero_image_url'] }}"
                                          alt="{{ $siteSettings['developer_name'] }}"
+                                         onerror="this.onerror=null;this.src='{{ asset('images/shahzad-ali.png') }}';"
                                          class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-700 ease-out">
                                 </div>
 

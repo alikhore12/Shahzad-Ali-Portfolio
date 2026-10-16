@@ -49,7 +49,7 @@
             <div class="h-16 flex items-center justify-between px-6 border-b border-white/[0.08] bg-surface-950/50">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 group">
                     <div class="h-9 w-9 rounded-full overflow-hidden shrink-0 border border-brand-500/40 ring-2 ring-brand-500/20 bg-surface-900 flex items-center justify-center shadow-md">
-                        <img src="{{ $siteSettings['site_logo_url'] }}" alt="Logo" class="w-full h-full object-cover rounded-full">
+                        <img src="{{ $siteSettings['site_logo_url'] }}" alt="Logo" onerror="this.onerror=null;this.src='{{ asset('images/shahzad-ali.png') }}';" class="w-full h-full object-cover rounded-full">
                     </div>
                     <div>
                         <div class="font-display text-sm font-bold text-white tracking-tight">Shahzad<span class="text-brand-400">Labs</span></div>

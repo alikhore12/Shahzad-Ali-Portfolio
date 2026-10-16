@@ -40,16 +40,28 @@ class AppServiceProvider extends ServiceProvider
 
             $resolveUrl = function ($val, $fallback = null) {
                 if (!$val) {
-                    return $fallback;
+                    return $fallback ?: asset('images/shahzad-ali.png');
                 }
-                if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
+                if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, 'data:image') || str_starts_with($val, '/')) {
                     return $val;
+                }
+                if (str_starts_with($val, 'images/')) {
+                    return asset($val);
+                }
+                if (file_exists(public_path('images/' . $val))) {
+                    return asset('images/' . $val);
+                }
+                if (file_exists(public_path($val))) {
+                    return asset($val);
+                }
+                if (str_starts_with($val, 'branding/')) {
+                    return asset('images/' . $val);
                 }
                 return asset('storage/' . $val);
             };
 
-            // Default modern developer portrait fallback
-            $defaultAvatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80';
+            // Default developer portrait (Shahzad Ali)
+            $defaultAvatar = asset('images/shahzad-ali.png');
 
             $heroImage = $resolveUrl($settings['hero_image'] ?? null, $defaultAvatar);
             $siteLogo  = $resolveUrl($settings['site_logo'] ?? null, $heroImage);

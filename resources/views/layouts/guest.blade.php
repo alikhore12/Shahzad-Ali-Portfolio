@@ -38,7 +38,7 @@
     <header class="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
         <a href="{{ route('home') }}" class="flex items-center gap-3 group">
             <div class="h-10 w-10 rounded-full overflow-hidden border border-brand-500/40 ring-2 ring-brand-500/20 bg-surface-900 flex items-center justify-center shadow-lg transition-all duration-300 group-hover:ring-brand-400/50">
-                <img src="{{ $siteSettings['site_logo_url'] ?? asset('favicon.ico') }}" alt="Logo" class="w-full h-full object-cover rounded-full">
+                <img src="{{ $siteSettings['site_logo_url'] ?? asset('images/shahzad-ali.png') }}" alt="Logo" onerror="this.onerror=null;this.src='{{ asset('images/shahzad-ali.png') }}';" class="w-full h-full object-cover rounded-full">
             </div>
             <div>
                 <div class="font-display text-base font-bold text-white tracking-tight flex items-center gap-1.5">

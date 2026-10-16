@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // ── Site Branding Settings ──────────────────────────────────
-        $defaultBrandImg = 'branding/FNz0gHAE6iCkOeNGW4h1R0Xl6BVtbLMccUYR9gtp.png';
+        $defaultBrandImg = 'images/shahzad-ali.png';
         \App\Models\Setting::updateOrCreate(['key' => 'hero_image'], ['value' => $defaultBrandImg]);
         \App\Models\Setting::updateOrCreate(['key' => 'site_logo'], ['value' => $defaultBrandImg]);
         \App\Models\Setting::updateOrCreate(['key' => 'favicon'], ['value' => $defaultBrandImg]);
