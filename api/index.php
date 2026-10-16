@@ -35,6 +35,25 @@ putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 $_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 
+// Copy bootstrap cache manifests to writable /tmp
+$sourcePackages = __DIR__ . '/../bootstrap/cache/packages.php';
+$targetPackages = '/tmp/bootstrap/cache/packages.php';
+if (!file_exists($targetPackages) && file_exists($sourcePackages)) {
+    @copy($sourcePackages, $targetPackages);
+}
+putenv("APP_PACKAGES_CACHE={$targetPackages}");
+$_ENV['APP_PACKAGES_CACHE'] = $targetPackages;
+$_SERVER['APP_PACKAGES_CACHE'] = $targetPackages;
+
+$sourceServices = __DIR__ . '/../bootstrap/cache/services.php';
+$targetServices = '/tmp/bootstrap/cache/services.php';
+if (!file_exists($targetServices) && file_exists($sourceServices)) {
+    @copy($sourceServices, $targetServices);
+}
+putenv("APP_SERVICES_CACHE={$targetServices}");
+$_ENV['APP_SERVICES_CACHE'] = $targetServices;
+$_SERVER['APP_SERVICES_CACHE'] = $targetServices;
+
 // Ensure session & cache do not try to write to read-only DB/filesystem
 putenv('SESSION_DRIVER=cookie');
 $_ENV['SESSION_DRIVER'] = 'cookie';
