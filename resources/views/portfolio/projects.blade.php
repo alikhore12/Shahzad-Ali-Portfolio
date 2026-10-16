@@ -121,6 +121,7 @@
                         {{-- Project Thumbnail with Real Image --}}
                         <a href="{{ route('projects.show', $project->slug) }}" class="relative aspect-[16/10] overflow-hidden bg-surface-900 block">
                             <img src="{{ $project->image_url }}" alt="{{ $project->title }}"
+                                 onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';"
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                             
                             {{-- Category Badge --}}

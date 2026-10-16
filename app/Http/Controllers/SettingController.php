@@ -35,26 +35,31 @@ class SettingController extends Controller
             'hero_tagline'    => ['nullable', 'string', 'max:255'],
         ]);
 
+        $saveImage = function ($file, $folder) {
+            if (env('VERCEL') || isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
+                $mime = $file->getMimeType() ?: 'image/jpeg';
+                return 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+            }
+            return $file->store($folder, 'public');
+        };
+
         // 1. Process Hero Image
         if ($request->hasFile('hero_image')) {
-            $path = $request->file('hero_image')->store('branding', 'public');
-            Setting::set('hero_image', $path);
+            Setting::set('hero_image', $saveImage($request->file('hero_image'), 'branding'));
         } elseif ($request->filled('hero_image_url')) {
             Setting::set('hero_image', $request->input('hero_image_url'));
         }
 
         // 2. Process Site Logo
         if ($request->hasFile('site_logo')) {
-            $path = $request->file('site_logo')->store('branding', 'public');
-            Setting::set('site_logo', $path);
+            Setting::set('site_logo', $saveImage($request->file('site_logo'), 'branding'));
         } elseif ($request->filled('site_logo_url')) {
             Setting::set('site_logo', $request->input('site_logo_url'));
         }
 
         // 3. Process Favicon
         if ($request->hasFile('favicon')) {
-            $path = $request->file('favicon')->store('branding', 'public');
-            Setting::set('favicon', $path);
+            Setting::set('favicon', $saveImage($request->file('favicon'), 'branding'));
         } elseif ($request->filled('favicon_url')) {
             Setting::set('favicon', $request->input('favicon_url'));
         }

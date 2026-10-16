@@ -44,7 +44,13 @@ class ProjectController extends Controller
         $data['is_featured'] = $request->boolean('is_featured');
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('projects', 'public');
+            $file = $request->file('image');
+            if (env('VERCEL') || isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
+                $mime = $file->getMimeType() ?: 'image/jpeg';
+                $data['image'] = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+            } else {
+                $data['image'] = $file->store('projects', 'public');
+            }
         } elseif ($request->filled('image_url')) {
             $data['image'] = $request->input('image_url');
         }
@@ -78,11 +84,16 @@ class ProjectController extends Controller
         $data['is_featured'] = $request->boolean('is_featured');
 
         if ($request->hasFile('image')) {
-            // Delete old image if exists locally
-            if ($project->image && !str_starts_with($project->image, 'http')) {
-                Storage::disk('public')->delete($project->image);
+            $file = $request->file('image');
+            if (env('VERCEL') || isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
+                $mime = $file->getMimeType() ?: 'image/jpeg';
+                $data['image'] = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
+            } else {
+                if ($project->image && !str_starts_with($project->image, 'http') && !str_starts_with($project->image, 'data:image')) {
+                    Storage::disk('public')->delete($project->image);
+                }
+                $data['image'] = $file->store('projects', 'public');
             }
-            $data['image'] = $request->file('image')->store('projects', 'public');
         } elseif ($request->filled('image_url')) {
             $data['image'] = $request->input('image_url');
         }

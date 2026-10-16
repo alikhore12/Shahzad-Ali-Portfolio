@@ -65,7 +65,9 @@
         <div class="mx-auto max-w-7xl px-6 lg:px-8 mb-16">
             <div class="glass-card overflow-hidden p-2 ring-1 ring-white/[0.1] shadow-2xl">
                 <div class="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-surface-900 relative">
-                    <img src="{{ $project->image_url }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
+                    <img src="{{ $project->image_url }}" alt="{{ $project->title }}"
+                         onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';"
+                         class="w-full h-full object-cover">
                 </div>
             </div>
         </div>

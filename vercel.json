@@ -11,7 +11,7 @@
   },
   "routes": [
     {
-      "src": "/(build|images|storage|favicon.*|apple-touch-icon.*|robots.txt)(.*)",
+      "src": "/(build|images|favicon.*|apple-touch-icon.*|robots.txt)(.*)",
       "dest": "/public/$1$2"
     },
     {

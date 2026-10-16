@@ -30,8 +30,9 @@ Route::get('/sitemap.xml', [PortfolioController::class, 'sitemap'])->name('sitem
 // ── Storage Asset Fallback ──────────────────────────────────────────
 Route::get('/storage/{path}', function (string $path) {
     $candidates = [
-        public_path('storage/' . $path),
         storage_path('app/public/' . $path),
+        '/tmp/storage/app/public/' . $path,
+        public_path('storage/' . $path),
         base_path('storage/app/public/' . $path),
     ];
     foreach ($candidates as $filePath) {
@@ -42,6 +43,14 @@ Route::get('/storage/{path}', function (string $path) {
                 'Cache-Control' => 'public, max-age=31536000, immutable',
             ]);
         }
+    }
+    // Fallback: If image not found, serve placeholder image instead of broken 404
+    $placeholder = public_path('images/project-placeholder.svg');
+    if (file_exists($placeholder)) {
+        return response()->file($placeholder, [
+            'Content-Type' => 'image/svg+xml',
+            'Cache-Control' => 'no-cache, private',
+        ]);
     }
     abort(404);
 })->where('path', '.*')->name('storage.file');

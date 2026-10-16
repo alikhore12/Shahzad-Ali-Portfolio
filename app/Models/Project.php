@@ -87,7 +87,7 @@ class Project extends Model
      */
     public function getImageUrlAttribute(): string
     {
-        if ($this->image && str_starts_with($this->image, 'http')) {
+        if ($this->image && (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://') || str_starts_with($this->image, 'data:image') || str_starts_with($this->image, '/'))) {
             return $this->image;
         }
 
