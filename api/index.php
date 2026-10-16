@@ -5,6 +5,10 @@
  * Handles read-only Lambda environment by preparing writable /tmp directories.
  */
 
+putenv('VERCEL=1');
+$_ENV['VERCEL'] = '1';
+$_SERVER['VERCEL'] = '1';
+
 // 1. Prepare writable /tmp storage paths
 $tmpDirs = [
     '/tmp/storage/framework/views',
