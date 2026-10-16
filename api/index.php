@@ -5,7 +5,7 @@
  * Handles read-only Lambda environment by preparing writable /tmp directories.
  */
 
-// 1. Prepare writable /tmp storage paths for compiled views, cache, sessions & logs
+// 1. Prepare writable /tmp storage paths
 $tmpDirs = [
     '/tmp/storage/framework/views',
     '/tmp/storage/framework/cache',
@@ -20,18 +20,25 @@ foreach ($tmpDirs as $dir) {
     }
 }
 
-// 2. Redirect Laravel cache and view paths to /tmp
+// 2. Redirect Laravel storage and view cache to /tmp
 putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
 $_ENV['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 $_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
 
-putenv('APP_CONFIG_CACHE=/tmp/bootstrap/cache/config.php');
-putenv('APP_EVENTS_CACHE=/tmp/bootstrap/cache/events.php');
-putenv('APP_PACKAGES_CACHE=/tmp/bootstrap/cache/packages.php');
-putenv('APP_ROUTES_CACHE=/tmp/bootstrap/cache/routes.php');
-putenv('APP_SERVICES_CACHE=/tmp/bootstrap/cache/services.php');
+// Ensure session & cache do not try to write to read-only DB/filesystem
+putenv('SESSION_DRIVER=cookie');
+$_ENV['SESSION_DRIVER'] = 'cookie';
+$_SERVER['SESSION_DRIVER'] = 'cookie';
 
-// 3. Fallback for APP_KEY if not configured in Vercel UI
+putenv('CACHE_STORE=array');
+$_ENV['CACHE_STORE'] = 'array';
+$_SERVER['CACHE_STORE'] = 'array';
+
+putenv('APP_DEBUG=true');
+$_ENV['APP_DEBUG'] = 'true';
+$_SERVER['APP_DEBUG'] = 'true';
+
+// 3. Fallback for APP_KEY
 if (!getenv('APP_KEY')) {
     $fallbackKey = 'base64:J1b4f1dPBV9pkfrTg+r8agD7a1dmiRSvRt1adO0BR2s=';
     putenv("APP_KEY={$fallbackKey}");
@@ -40,27 +47,33 @@ if (!getenv('APP_KEY')) {
 }
 
 // 4. Handle SQLite database in writable /tmp
-if (!file_exists('/tmp/database.sqlite')) {
-    $sourceDb = __DIR__ . '/../database/database.sqlite';
-    if (file_exists($sourceDb)) {
-        @copy($sourceDb, '/tmp/database.sqlite');
+$sourceDb = __DIR__ . '/../database/database.sqlite';
+$targetDb = '/tmp/database.sqlite';
+
+if (!file_exists($targetDb) || filesize($targetDb) === 0) {
+    if (file_exists($sourceDb) && filesize($sourceDb) > 0) {
+        @copy($sourceDb, $targetDb);
     } else {
-        @touch('/tmp/database.sqlite');
+        @touch($targetDb);
     }
 }
-if (file_exists('/tmp/database.sqlite')) {
-    putenv('DB_DATABASE=/tmp/database.sqlite');
-    $_ENV['DB_DATABASE'] = '/tmp/database.sqlite';
-    $_SERVER['DB_DATABASE'] = '/tmp/database.sqlite';
+
+if (file_exists($targetDb)) {
+    putenv("DB_DATABASE={$targetDb}");
+    $_ENV['DB_DATABASE'] = $targetDb;
+    $_SERVER['DB_DATABASE'] = $targetDb;
+    putenv('DB_CONNECTION=sqlite');
+    $_ENV['DB_CONNECTION'] = 'sqlite';
+    $_SERVER['DB_CONNECTION'] = 'sqlite';
 }
 
-// 5. Run Laravel application with error handling
+// 5. Run Laravel application
 try {
     require __DIR__ . '/../public/index.php';
 } catch (\Throwable $e) {
     http_response_code(500);
     echo '<!DOCTYPE html><html><head><title>Application Error</title><style>body{font-family:sans-serif;background:#09090b;color:#f4f4f5;padding:2rem;line-height:1.6}h1{color:#ef4444}pre{background:#18181b;padding:1rem;border-radius:8px;overflow:auto}</style></head><body>';
-    echo '<h1>Laravel Deployment Notice</h1>';
+    echo '<h1>Laravel Deployment Error</h1>';
     echo '<p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
     echo '<p><strong>File:</strong> ' . htmlspecialchars($e->getFile()) . ':' . $e->getLine() . '</p>';
     echo '<h3>Stack Trace:</h3>';
