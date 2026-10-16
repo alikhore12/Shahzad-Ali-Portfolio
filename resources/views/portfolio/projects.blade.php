@@ -88,22 +88,23 @@
                         </svg>
                     </div>
                     @if($totalCount === 0)
-                        <h3 class="font-display text-xl font-bold text-white tracking-tight">No Projects Published Yet</h3>
+                        <h3 class="font-display text-xl font-bold text-white tracking-tight">Case Studies Coming Soon</h3>
                         <p class="mt-2 text-sm text-surface-200/60 leading-relaxed max-w-md mx-auto">
-                            Only projects added and published through the Admin Dashboard will appear here. Login to your dashboard to add your first project showcase.
+                            Our portfolio showcase is currently being updated with recent enterprise deployments. Feel free to inspect our engineering stack or get in touch for project inquiries.
                         </p>
                         <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-                            @auth
-                                <a href="{{ route('admin.projects.create') }}" class="btn-primary !text-xs flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                    Add Project from Dashboard
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" class="btn-primary !text-xs flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                                    Dashboard Login to Add Projects
-                                </a>
-                            @endauth
+                            <a href="{{ route('skills.index') }}" class="btn-primary !text-xs flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                </svg>
+                                <span>View Technical Stack</span>
+                            </a>
+                            <a href="{{ route('contact.index') }}" class="btn-outline !text-xs flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Get in Touch</span>
+                            </a>
                         </div>
                     @else
                         <h3 class="font-display text-lg font-bold text-white">No Projects Match Your Filter</h3>

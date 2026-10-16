@@ -291,23 +291,23 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-6A1.125 1.125 0 012.25 11.625v-4.5zM14.625 6A1.125 1.125 0 0013.5 7.125v10.5c0 .621.504 1.125 1.125 1.125h6c.621 0 1.125-.504 1.125-1.125V7.125C21.75 6.504 21.246 6 20.625 6h-6zM2.25 16.125c0-.621.504-1.125 1.125-1.125h6c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125h-6A1.125 1.125 0 012.25 17.625v-1.5z"/>
                             </svg>
                         </div>
-                        <h3 class="font-display text-xl font-bold text-white tracking-tight">No Projects Published Yet</h3>
+                        <h3 class="font-display text-xl font-bold text-white tracking-tight">Featured Projects Coming Soon</h3>
                         <p class="mt-2 text-sm text-surface-200/60 leading-relaxed max-w-md mx-auto">
-                            Only projects added and published through the Admin Dashboard will appear here. Login to your dashboard to add your first project showcase.
+                            Production case studies and web applications are currently being curated for display. In the meantime, explore our technical competencies or reach out to discuss your project.
                         </p>
                         <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-                            @auth
-                                <a href="{{ route('admin.projects.create') }}" class="btn-primary !text-xs flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                    Add Project from Dashboard
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" class="btn-primary !text-xs flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                                    Dashboard Login to Add Projects
-                                </a>
-                            @endauth
-                            <a href="{{ route('skills.index') }}" class="btn-outline !text-xs">Explore Skills &amp; Stack</a>
+                            <a href="{{ route('skills.index') }}" class="btn-primary !text-xs flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                </svg>
+                                <span>Explore Tech Stack &amp; Skills</span>
+                            </a>
+                            <a href="{{ route('contact.index') }}" class="btn-outline !text-xs flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Contact Shahzad Labs</span>
+                            </a>
                         </div>
                     </div>
                 </div>
