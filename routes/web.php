@@ -27,6 +27,25 @@ Route::get('/contact', [PortfolioController::class, 'contactPage'])->name('conta
 Route::post('/contact', [PortfolioController::class, 'contact'])->name('contact.submit');
 Route::get('/sitemap.xml', [PortfolioController::class, 'sitemap'])->name('sitemap');
 
+// ── Storage Asset Fallback ──────────────────────────────────────────
+Route::get('/storage/{path}', function (string $path) {
+    $candidates = [
+        public_path('storage/' . $path),
+        storage_path('app/public/' . $path),
+        base_path('storage/app/public/' . $path),
+    ];
+    foreach ($candidates as $filePath) {
+        if (file_exists($filePath) && !is_dir($filePath)) {
+            $mime = mime_content_type($filePath) ?: 'application/octet-stream';
+            return response()->file($filePath, [
+                'Content-Type' => $mime,
+                'Cache-Control' => 'public, max-age=31536000, immutable',
+            ]);
+        }
+    }
+    abort(404);
+})->where('path', '.*')->name('storage.file');
+
 // ── Admin Dashboard (protected) ──────────────────────────────────────
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
 
