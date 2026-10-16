@@ -9,6 +9,13 @@ putenv('VERCEL=1');
 $_ENV['VERCEL'] = '1';
 $_SERVER['VERCEL'] = '1';
 
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+} else {
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+}
+
 putenv('LARAVEL_STORAGE_PATH=/tmp/storage');
 $_ENV['LARAVEL_STORAGE_PATH'] = '/tmp/storage';
 $_SERVER['LARAVEL_STORAGE_PATH'] = '/tmp/storage';
