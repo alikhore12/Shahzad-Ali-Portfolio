@@ -11,8 +11,14 @@
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="robots" content="index, follow">
 
-    {{-- Favicon (Dynamic from Settings) --}}
-    <link rel="icon" href="{{ $siteSettings['favicon_url'] }}">
+    {{-- Favicons --}}
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    @if (!empty($siteSettings['favicon_url']))
+        <link rel="alternate icon" href="{{ $siteSettings['favicon_url'] }}">
+    @endif
 
     {{-- OpenGraph Tags --}}
     <meta property="og:type" content="website">

@@ -8,8 +8,11 @@
 
     <title>{{ config('app.name', 'Shahzad Labs') }} — Secure Admin Portal</title>
 
-    {{-- Favicon --}}
-    <link rel="icon" href="{{ $siteSettings['favicon_url'] ?? asset('favicon.ico') }}">
+    {{-- Favicons --}}
+    <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('favicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
 
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
