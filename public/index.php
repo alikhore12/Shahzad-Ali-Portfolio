@@ -59,11 +59,13 @@ $dbPath = $baseDir . '/database/database.sqlite';
 if (!file_exists($dbPath)) {
     @touch($dbPath);
 }
-@chmod($baseDir . '/database', 0775);
-@chmod($dbPath, 0664);
+if (function_exists('chmod')) {
+    @chmod($baseDir . '/database', 0775);
+    @chmod($dbPath, 0664);
+}
 
-// 6. Ensure public storage link exists
-if (!file_exists(__DIR__ . '/storage') && file_exists($baseDir . '/storage/app/public')) {
+// 6. Ensure public storage link exists (if symlink is allowed on host)
+if (function_exists('symlink') && !file_exists(__DIR__ . '/storage') && file_exists($baseDir . '/storage/app/public')) {
     @symlink($baseDir . '/storage/app/public', __DIR__ . '/storage');
 }
 
