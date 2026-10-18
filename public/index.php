@@ -1,12 +1,27 @@
 <?php
 
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// 1. Auto-create .env from .env.example if missing
 $baseDir = dirname(__DIR__);
+
+// 1. Verify Composer autoloader exists
+if (!file_exists($baseDir . '/vendor/autoload.php')) {
+    http_response_code(500);
+    echo '<!DOCTYPE html><html><head><title>Deployment in progress</title><style>body{font-family:sans-serif;padding:2rem;background:#0f172a;color:#f8fafc}</style></head><body>';
+    echo '<h1>vendor/autoload.php not found</h1>';
+    echo '<p>Hostinger is still installing dependencies or Composer needs to run. Please check Git deployment status in hPanel.</p>';
+    echo '</body></html>';
+    exit(1);
+}
+
+// 2. Auto-create .env from .env.example if missing
 $envPath = $baseDir . '/.env';
 $envExamplePath = $baseDir . '/.env.example';
 
@@ -14,7 +29,7 @@ if (!file_exists($envPath) && file_exists($envExamplePath)) {
     @copy($envExamplePath, $envPath);
 }
 
-// 2. Ensure APP_KEY fallback if not present in environment
+// 3. Ensure APP_KEY fallback if not present in environment
 if (!getenv('APP_KEY')) {
     $fallbackKey = 'base64:J1b4f1dPBV9pkfrTg+r8agD7a1dmiRSvRt1adO0BR2s=';
     putenv("APP_KEY={$fallbackKey}");
@@ -22,7 +37,7 @@ if (!getenv('APP_KEY')) {
     $_SERVER['APP_KEY'] = $fallbackKey;
 }
 
-// 3. Ensure required writable storage and cache directories exist
+// 4. Ensure required writable storage and cache directories exist
 $storageDirs = [
     $baseDir . '/storage/framework/views',
     $baseDir . '/storage/framework/cache',
@@ -39,7 +54,7 @@ foreach ($storageDirs as $dir) {
     }
 }
 
-// 4. Ensure SQLite database exists and has writable permissions
+// 5. Ensure SQLite database exists and has writable permissions
 $dbPath = $baseDir . '/database/database.sqlite';
 if (!file_exists($dbPath)) {
     @touch($dbPath);
@@ -47,7 +62,7 @@ if (!file_exists($dbPath)) {
 @chmod($baseDir . '/database', 0775);
 @chmod($dbPath, 0664);
 
-// 5. Ensure public storage link exists
+// 6. Ensure public storage link exists
 if (!file_exists(__DIR__ . '/storage') && file_exists($baseDir . '/storage/app/public')) {
     @symlink($baseDir . '/storage/app/public', __DIR__ . '/storage');
 }
