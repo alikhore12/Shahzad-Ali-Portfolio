@@ -6,7 +6,7 @@
         "node": "24.x"
     },
     "scripts": {
-        "build": "vite build && node scripts/ensure-dist.js",
+        "build": "vite build",
         "dev": "vite"
     },
     "devDependencies": {

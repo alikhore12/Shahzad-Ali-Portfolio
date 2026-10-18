@@ -20,8 +20,4 @@ $app = Application::configure(basePath: dirname(__DIR__))
         );
     })->create();
 
-if (isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL') || str_contains(__DIR__, '/var/task')) {
-    $app->useStoragePath('/tmp/storage');
-}
-
 return $app;

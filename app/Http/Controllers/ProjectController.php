@@ -45,12 +45,7 @@ class ProjectController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            if (env('VERCEL') || isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
-                $mime = $file->getMimeType() ?: 'image/jpeg';
-                $data['image'] = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
-            } else {
-                $data['image'] = $file->store('projects', 'public');
-            }
+            $data['image'] = $file->store('projects', 'public');
         } elseif ($request->filled('image_url')) {
             $data['image'] = $request->input('image_url');
         }
@@ -85,15 +80,10 @@ class ProjectController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            if (env('VERCEL') || isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
-                $mime = $file->getMimeType() ?: 'image/jpeg';
-                $data['image'] = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
-            } else {
-                if ($project->image && !str_starts_with($project->image, 'http') && !str_starts_with($project->image, 'data:image')) {
-                    Storage::disk('public')->delete($project->image);
-                }
-                $data['image'] = $file->store('projects', 'public');
+            if ($project->image && !str_starts_with($project->image, 'http') && !str_starts_with($project->image, 'data:image')) {
+                Storage::disk('public')->delete($project->image);
             }
+            $data['image'] = $file->store('projects', 'public');
         } elseif ($request->filled('image_url')) {
             $data['image'] = $request->input('image_url');
         }

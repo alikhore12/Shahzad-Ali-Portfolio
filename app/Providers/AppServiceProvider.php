@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
             URL::forceScheme('https');
-        } elseif (app()->environment('production') || env('VERCEL') || isset($_SERVER['VERCEL'])) {
+        } elseif (app()->environment('production')) {
             URL::forceScheme('https');
         }
         View::composer('*', function ($view) {

@@ -36,10 +36,6 @@ class SettingController extends Controller
         ]);
 
         $saveImage = function ($file, $folder) {
-            if (env('VERCEL') || isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL')) {
-                $mime = $file->getMimeType() ?: 'image/jpeg';
-                return 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($file->getRealPath()));
-            }
             return $file->store($folder, 'public');
         };
 
