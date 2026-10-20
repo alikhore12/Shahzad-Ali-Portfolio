@@ -109,6 +109,7 @@
                              x-transition:enter-end="opacity-100 scale-100"
                              :src="item.url"
                              :alt="item.title"
+                             onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';"
                              class="w-full h-full object-cover">
                     </template>
 
@@ -165,7 +166,7 @@
                                 <button type="button" @click="activeIndex = idx"
                                         :class="activeIndex === idx ? 'ring-2 ring-brand-400 border-transparent shadow-lg shadow-brand-500/20 scale-[1.02]' : 'opacity-60 hover:opacity-100 border-white/10'"
                                         class="relative flex-shrink-0 w-24 sm:w-32 aspect-[16/10] rounded-xl overflow-hidden border bg-surface-900 transition-all duration-200">
-                                    <img :src="item.url" :alt="item.title" class="w-full h-full object-cover">
+                                    <img :src="item.url" :alt="item.title" onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';" class="w-full h-full object-cover">
                                 </button>
                             </template>
                         </div>
@@ -199,6 +200,7 @@
                 <div class="relative max-w-6xl max-h-[85vh] w-full h-full flex items-center justify-center p-2"
                      @click.outside="lightboxOpen = false">
                     <img :src="items[activeIndex]?.url" :alt="items[activeIndex]?.title"
+                         onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';"
                          class="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/10">
                 </div>
 

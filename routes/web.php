@@ -28,13 +28,34 @@ Route::post('/contact', [PortfolioController::class, 'contact'])->name('contact.
 Route::get('/sitemap.xml', [PortfolioController::class, 'sitemap'])->name('sitemap');
 
 // ── Storage Asset Fallback ──────────────────────────────────────────
-Route::get('/storage/{path}', function (string $path) {
+Route::match(['GET', 'HEAD'], '/storage/{path}', function (string $path) {
+    $cleanPath = ltrim(preg_replace('#^(public/)?storage/#i', '', $path), '/');
+
+    // 1. Check via public disk
+    try {
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($cleanPath)) {
+            $filePath = \Illuminate\Support\Facades\Storage::disk('public')->path($cleanPath);
+            if (file_exists($filePath) && !is_dir($filePath)) {
+                $mime = mime_content_type($filePath) ?: 'application/octet-stream';
+                return response()->file($filePath, [
+                    'Content-Type' => $mime,
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
+                ]);
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    // 2. Direct filesystem candidates
     $candidates = [
+        storage_path('app/public/' . $cleanPath),
         storage_path('app/public/' . $path),
-        '/tmp/storage/app/public/' . $path,
-        public_path('storage/' . $path),
-        base_path('storage/app/public/' . $path),
+        public_path('storage/' . $cleanPath),
+        base_path('storage/app/public/' . $cleanPath),
+        public_path('images/' . $cleanPath),
+        public_path($cleanPath),
+        '/tmp/storage/app/public/' . $cleanPath,
     ];
+
     foreach ($candidates as $filePath) {
         if (file_exists($filePath) && !is_dir($filePath)) {
             $mime = mime_content_type($filePath) ?: 'application/octet-stream';
@@ -44,7 +65,8 @@ Route::get('/storage/{path}', function (string $path) {
             ]);
         }
     }
-    // Fallback: If image not found, serve placeholder image instead of broken 404
+
+    // 3. Fallback: If image not found, serve placeholder image instead of broken 404
     $placeholder = public_path('images/project-placeholder.svg');
     if (file_exists($placeholder)) {
         return response()->file($placeholder, [
@@ -52,6 +74,7 @@ Route::get('/storage/{path}', function (string $path) {
             'Cache-Control' => 'no-cache, private',
         ]);
     }
+
     abort(404);
 })->where('path', '.*')->name('storage.file');
 

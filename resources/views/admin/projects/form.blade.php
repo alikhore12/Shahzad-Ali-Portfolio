@@ -95,7 +95,7 @@
                         <div class="text-xs text-surface-200/50 mb-1 font-medium">Live Card Preview:</div>
                         <div class="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-surface-900 border border-white/[0.1] shadow-md flex items-center justify-center">
                             <template x-if="imagePreview">
-                                <img :src="imagePreview" alt="Project preview" class="w-full h-full object-cover">
+                                <img :src="imagePreview" alt="Project preview" onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';" class="w-full h-full object-cover">
                             </template>
                             <template x-if="!imagePreview">
                                 <div class="text-center p-4">
@@ -157,7 +157,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         @foreach($project->galleryImages as $img)
                         <div class="relative group rounded-xl overflow-hidden border border-white/[0.1] bg-surface-900 aspect-[16/10]">
-                            <img src="{{ $img->image_url }}" alt="Gallery image" class="w-full h-full object-cover">
+                            <img src="{{ $img->image_url }}" alt="Gallery image" onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';" class="w-full h-full object-cover">
                             
                             {{-- Delete Checkbox Overlay --}}
                             <label class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex items-center justify-between cursor-pointer">

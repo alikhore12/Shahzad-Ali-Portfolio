@@ -61,7 +61,7 @@
                                 <td class="py-4 px-5 align-middle">
                                     <div class="flex items-center gap-3.5 min-w-0 max-w-full">
                                         <div class="h-12 w-16 shrink-0 rounded-xl overflow-hidden bg-surface-900 border border-white/[0.08] shadow-sm relative">
-                                            <img src="{{ $project->image_url }}" alt="{{ $project->title }}" class="h-full w-full object-cover">
+                                            <img src="{{ $project->image_url }}" alt="{{ $project->title }}" onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';" class="h-full w-full object-cover">
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <a href="{{ route('admin.projects.edit', $project) }}" class="font-semibold text-white text-sm hover:text-brand-300 transition-colors block truncate" title="{{ $project->title }}">
