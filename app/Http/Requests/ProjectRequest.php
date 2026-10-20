@@ -29,6 +29,11 @@ class ProjectRequest extends FormRequest
             'metric'      => ['nullable', 'string', 'max:255'],
             'order'       => ['nullable', 'integer', 'min:0'],
             'is_featured' => ['nullable', 'boolean'],
+            'gallery_images'   => ['nullable', 'array'],
+            'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120'],
+            'gallery_urls'     => ['nullable', 'string', 'max:5000'],
+            'delete_gallery_images'   => ['nullable', 'array'],
+            'delete_gallery_images.*' => ['integer'],
         ];
     }
 }

@@ -70,6 +70,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     // Messages / Inquiries
     Route::get('/messages', [DashboardController::class, 'messages'])->name('messages');
     Route::get('/messages/{message}', [DashboardController::class, 'showMessage'])->name('messages.show');
+    Route::post('/messages/{message}/reply', [DashboardController::class, 'replyMessage'])->name('messages.reply');
     Route::delete('/messages/{message}', [DashboardController::class, 'destroyMessage'])->name('messages.destroy');
 
     // Site Branding & Settings (Hero Image, Logo, Favicon)

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MessageReply;
 use App\Models\Message;
 use App\Models\Project;
 use App\Models\Skill;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Admin dashboard: overview metrics and inquiry management.
@@ -24,7 +28,7 @@ class DashboardController extends Controller
             'unread_messages'    => Message::unread()->count(),
         ];
 
-        $recentMessages = Message::latest()->take(5)->get();
+        $recentMessages = Message::with('replies')->latest()->take(6)->get();
         $recentProjects = Project::latest()->take(5)->get();
         $recentSkills   = Skill::latest()->take(5)->get();
 
@@ -36,7 +40,7 @@ class DashboardController extends Controller
      */
     public function messages()
     {
-        $messages = Message::latest()->paginate(20);
+        $messages = Message::with('replies')->latest()->paginate(20);
 
         return view('admin.messages', compact('messages'));
     }
@@ -50,7 +54,52 @@ class DashboardController extends Controller
             $message->update(['is_read' => true]);
         }
 
+        $message->load('replies.user');
+
         return view('admin.message-show', compact('message'));
+    }
+
+    /**
+     * Send direct reply to a contact inquiry message.
+     */
+    public function replyMessage(Request $request, Message $message)
+    {
+        $validated = $request->validate([
+            'subject'    => ['required', 'string', 'max:255'],
+            'reply_body' => ['required', 'string', 'max:5000'],
+        ]);
+
+        // 1. Record reply in database
+        $reply = $message->replies()->create([
+            'user_id'    => auth()->id(),
+            'subject'    => $validated['subject'],
+            'reply_body' => $validated['reply_body'],
+        ]);
+
+        // 2. Mark parent message as replied & read
+        $message->update([
+            'is_read'    => true,
+            'replied_at' => now(),
+        ]);
+
+        // 3. Dispatch Email notification to sender
+        $mailError = null;
+        try {
+            $senderName = auth()->user()?->name ?: 'Shahzad Ali (Shahzad Labs)';
+            Mail::to($message->email)->send(
+                new MessageReply($message, $validated['subject'], $validated['reply_body'], $senderName)
+            );
+        } catch (\Throwable $e) {
+            $mailError = $e->getMessage();
+            Log::warning('Direct message reply mail failed: ' . $mailError);
+        }
+
+        $successMsg = 'Direct reply sent to ' . $message->email . ' successfully!';
+        if ($mailError) {
+            $successMsg .= ' (Stored in dashboard; mail dispatch note: ' . $mailError . ')';
+        }
+
+        return redirect()->back()->with('success', $successMsg);
     }
 
     /**

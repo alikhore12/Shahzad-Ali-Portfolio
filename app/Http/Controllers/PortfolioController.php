@@ -59,7 +59,7 @@ class PortfolioController extends Controller
      */
     public function projectShow(string $slug)
     {
-        $project = Project::where('slug', $slug)->firstOrFail();
+        $project = Project::with('galleryImages')->where('slug', $slug)->firstOrFail();
         $relatedProjects = Project::where('id', '!=', $project->id)
             ->where('category', $project->category)
             ->take(3)

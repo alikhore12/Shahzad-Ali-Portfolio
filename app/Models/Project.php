@@ -83,6 +83,14 @@ class Project extends Model
     }
 
     /**
+     * Gallery images relationship.
+     */
+    public function galleryImages(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProjectImage::class)->orderBy('order')->orderBy('id');
+    }
+
+    /**
      * Get the public image URL.
      */
     public function getImageUrlAttribute(): string

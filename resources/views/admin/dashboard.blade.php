@@ -2,6 +2,27 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<div x-data="{
+    modalOpen: false,
+    replyId: null,
+    replyName: '',
+    replyEmail: '',
+    replySubject: '',
+    replyOriginal: '',
+    replyBody: '',
+    replyAction: '',
+    openReply(msg) {
+        this.replyId = msg.id;
+        this.replyName = msg.name;
+        this.replyEmail = msg.email;
+        this.replySubject = 'Re: ' + msg.subject;
+        this.replyOriginal = msg.message;
+        this.replyBody = 'Hi ' + msg.name + ',\n\nThank you for reaching out to Shahzad Labs regarding \"' + msg.subject + '\".\n\n';
+        this.replyAction = '/admin/messages/' + msg.id + '/reply';
+        this.modalOpen = true;
+    }
+}" @keydown.escape.window="modalOpen = false">
+
     {{-- Page Header --}}
     <div class="mb-8">
         <h1 class="font-display text-2xl font-bold text-white tracking-tight">Dashboard Overview</h1>
@@ -167,15 +188,34 @@
                     <a href="{{ route('admin.messages') }}" class="text-xs text-brand-400 hover:text-brand-300">View All →</a>
                 </div>
 
-                <div class="space-y-2.5">
+                <div class="space-y-3">
                     @forelse($recentMessages as $msg)
-                    <a href="{{ route('admin.messages.show', $msg) }}" class="block p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] transition-colors">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-medium {{ $msg->is_read ? 'text-surface-200/60' : 'text-white font-semibold' }} truncate">{{ $msg->name }}</span>
-                            <span class="text-[10px] text-surface-200/40">{{ $msg->created_at->diffForHumans() }}</span>
+                    <div class="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                @if($msg->is_replied)
+                                <span class="h-2 w-2 rounded-full bg-emerald-400 shrink-0" title="Replied"></span>
+                                @elseif(!$msg->is_read)
+                                <span class="h-2 w-2 rounded-full bg-amber-400 animate-ping shrink-0" title="New Message"></span>
+                                @else
+                                <span class="h-1.5 w-1.5 rounded-full bg-surface-600 shrink-0"></span>
+                                @endif
+                                <span class="text-xs font-semibold {{ $msg->is_read ? 'text-surface-200/80' : 'text-white' }} truncate">{{ $msg->name }}</span>
+                            </div>
+                            <span class="text-[10px] text-surface-200/40 shrink-0">{{ $msg->created_at->diffForHumans() }}</span>
                         </div>
-                        <div class="text-xs text-surface-200/50 truncate mt-0.5">{{ $msg->subject }}</div>
-                    </a>
+                        <div class="text-xs text-surface-200/60 truncate mt-1">{{ $msg->subject }}</div>
+                        <div class="flex items-center justify-between mt-2.5 pt-2 border-t border-white/[0.04]">
+                            <a href="{{ route('admin.messages.show', $msg) }}" class="text-[11px] text-surface-200/50 hover:text-white transition-colors">
+                                View details →
+                            </a>
+                            <button type="button" @click="openReply({{ Js::from($msg) }})"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-brand-500/15 hover:bg-brand-500/25 text-brand-300 border border-brand-500/30 transition-all">
+                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                                <span>Direct Reply</span>
+                            </button>
+                        </div>
+                    </div>
                     @empty
                     <p class="text-xs text-surface-200/40 text-center py-4">No messages received yet.</p>
                     @endforelse
@@ -185,4 +225,77 @@
         </div>
 
     </div>
+
+    {{-- ═══════════════════════════════════════════════════════════
+         QUICK REPLY POPUP MODAL (ALPINE.JS)
+    ═══════════════════════════════════════════════════════════ --}}
+    <div x-show="modalOpen"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+         style="display: none;">
+        
+        <div class="glass-card w-full max-w-xl p-6 sm:p-7 border border-white/[0.12] shadow-2xl relative"
+             @click.outside="modalOpen = false">
+            
+            {{-- Modal Header --}}
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.08]">
+                <div class="flex items-center gap-2.5">
+                    <div class="h-8 w-8 rounded-lg bg-brand-500/15 flex items-center justify-center text-brand-400">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-display text-base font-bold text-white">Direct Reply</h3>
+                        <p class="text-xs text-surface-200/50">Replying to <span class="text-white font-medium" x-text="replyName"></span> (<span x-text="replyEmail" class="font-mono text-brand-400"></span>)</p>
+                    </div>
+                </div>
+                <button type="button" @click="modalOpen = false" class="text-surface-200/50 hover:text-white p-1 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            {{-- Original Message Preview Snippet --}}
+            <div class="mb-4 p-3 rounded-xl bg-surface-950/70 border border-white/[0.04]">
+                <span class="text-[10px] uppercase tracking-wider font-semibold text-surface-200/40 block mb-1">Inquiry Snippet:</span>
+                <p class="text-xs text-surface-200/70 italic line-clamp-3" x-text="replyOriginal"></p>
+            </div>
+
+            {{-- Direct Reply Form --}}
+            <form :action="replyAction" method="POST" class="space-y-4">
+                @csrf
+
+                <div>
+                    <label class="block text-xs font-medium text-surface-200/70 mb-1">Subject *</label>
+                    <input type="text" name="subject" required x-model="replySubject"
+                           class="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs text-white placeholder-surface-200/30 focus:border-brand-500/50 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-surface-200/70 mb-1">Response Message *</label>
+                    <textarea name="reply_body" required rows="6" x-model="replyBody"
+                              class="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs text-white placeholder-surface-200/30 focus:border-brand-500/50 focus:outline-none focus:ring-2 focus:ring-brand-500/20 resize-none"
+                              placeholder="Type your official reply message here..."></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" @click="modalOpen = false" class="px-4 py-2 text-xs text-surface-200/60 hover:text-white">Cancel</button>
+                    <button type="submit" class="btn-primary !text-xs !py-2.5 !px-5 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
+                        </svg>
+                        <span>Send Email Reply</span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
 @endsection

@@ -110,6 +110,121 @@
                 </div>
             </div>
 
+            {{-- ═══════════════════════════════════════════════════════════
+                 PROJECT IMAGE GALLERY (MULTIPLE SCREENSHOTS & VIEWS)
+            ═══════════════════════════════════════════════════════════ --}}
+            <div class="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6" x-data="{
+                newImages: [],
+                handleFileSelect(event) {
+                    this.newImages = [];
+                    const files = event.target.files;
+                    for (let i = 0; i < files.length; i++) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.newImages.push({
+                                name: files[i].name,
+                                url: e.target.result,
+                                size: (files[i].size / 1024).toFixed(1) + ' KB'
+                            });
+                        };
+                        reader.readAsDataURL(files[i]);
+                    }
+                }
+            }">
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-semibold text-white flex items-center gap-2">
+                        <svg class="w-4 h-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/>
+                        </svg>
+                        Project Screenshots Gallery (Detail Page Showcase)
+                    </label>
+                    <span class="text-[11px] text-surface-200/50">Multiple images allowed</span>
+                </div>
+                <p class="text-xs text-surface-200/50 mb-5">
+                    Add high-resolution screenshots, mobile/tablet views, UI workflows, or architectural diagrams to display in the project case study detail page.
+                </p>
+
+                {{-- Existing Gallery Images (for edit mode) --}}
+                @if($editing && $project->galleryImages->isNotEmpty())
+                <div class="mb-6 p-4 rounded-xl border border-white/[0.06] bg-surface-950/60">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-semibold text-white uppercase tracking-wider">
+                            Current Gallery Images ({{ $project->galleryImages->count() }})
+                        </span>
+                        <span class="text-[11px] text-surface-200/40">Check "Remove" to delete on save</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        @foreach($project->galleryImages as $img)
+                        <div class="relative group rounded-xl overflow-hidden border border-white/[0.1] bg-surface-900 aspect-[16/10]">
+                            <img src="{{ $img->image_url }}" alt="Gallery image" class="w-full h-full object-cover">
+                            
+                            {{-- Delete Checkbox Overlay --}}
+                            <label class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex items-center justify-between cursor-pointer">
+                                <span class="text-[11px] font-medium text-red-300 flex items-center gap-1.5">
+                                    <input type="checkbox" name="delete_gallery_images[]" value="{{ $img->id }}"
+                                           class="rounded border-red-500/50 bg-red-950/50 text-red-500 focus:ring-red-500/40 w-3.5 h-3.5">
+                                    Remove
+                                </span>
+                                <span class="text-[10px] text-surface-200/40">#{{ $loop->iteration }}</span>
+                            </label>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                <div class="grid gap-6 sm:grid-cols-2">
+                    {{-- Upload Multiple Files --}}
+                    <div>
+                        <label class="block text-xs font-medium text-surface-200/70 mb-2">Upload Files From Computer</label>
+                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/20 rounded-xl cursor-pointer bg-white/[0.01] hover:bg-white/[0.04] hover:border-accent-400/50 transition-all">
+                            <div class="flex flex-col items-center justify-center p-3 text-center">
+                                <svg class="w-6 h-6 mb-1 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                                </svg>
+                                <p class="text-xs text-white font-medium">Select Multiple Images</p>
+                                <p class="text-[10px] text-surface-200/40 mt-0.5">JPG, PNG, WebP (hold Ctrl to select multiple)</p>
+                            </div>
+                            <input name="gallery_images[]" type="file" accept="image/*" multiple class="hidden"
+                                   @change="handleFileSelect($event)">
+                        </label>
+                    </div>
+
+                    {{-- Or Paste Direct Image URLs --}}
+                    <div>
+                        <label for="project-gallery-urls" class="block text-xs font-medium text-surface-200/70 mb-2">
+                            Or Paste Direct Image URLs <span class="text-surface-200/40">(one URL per line)</span>
+                        </label>
+                        <textarea id="project-gallery-urls" name="gallery_urls" rows="4"
+                                  class="w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-2.5 text-xs text-white placeholder-surface-200/30 focus:border-accent-400/50 focus:outline-none focus:ring-2 focus:ring-accent-400/20 resize-none font-mono"
+                                  placeholder="https://example.com/screenshot1.png&#10;https://example.com/screenshot2.png">{{ old('gallery_urls') }}</textarea>
+                    </div>
+                </div>
+
+                {{-- Live Previews of Newly Selected Upload Files --}}
+                <div x-show="newImages.length > 0" class="mt-4 pt-4 border-t border-white/[0.08]" style="display: none;">
+                    <div class="text-xs font-semibold text-accent-400 mb-2 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>Selected for Upload (<span x-text="newImages.length"></span> new images):</span>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        <template x-for="(img, idx) in newImages" :key="idx">
+                            <div class="relative aspect-[16/10] rounded-lg overflow-hidden border border-accent-400/40 bg-surface-900 group shadow">
+                                <img :src="img.url" :alt="img.name" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-1 flex items-end">
+                                    <span class="text-[9px] text-white truncate" x-text="img.name"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                @error('gallery_images') <p class="mt-2 text-xs text-red-400">{{ $message }}</p> @enderror
+                @error('gallery_images.*') <p class="mt-2 text-xs text-red-400">{{ $message }}</p> @enderror
+                @error('gallery_urls') <p class="mt-2 text-xs text-red-400">{{ $message }}</p> @enderror
+            </div>
+
             {{-- Description --}}
             <div>
                 <label for="project-desc" class="block text-sm font-medium text-surface-200/70 mb-2">Description & Case Study Details *</label>

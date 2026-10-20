@@ -25,11 +25,29 @@ class Message extends Model
         'subject',
         'message',
         'is_read',
+        'replied_at',
     ];
 
     protected $casts = [
-        'is_read' => 'boolean',
+        'is_read'    => 'boolean',
+        'replied_at' => 'datetime',
     ];
+
+    /**
+     * Replies sent to this message.
+     */
+    public function replies(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(MessageReply::class)->latest();
+    }
+
+    /**
+     * Check if this message has been replied to.
+     */
+    public function getIsRepliedAttribute(): bool
+    {
+        return !is_null($this->replied_at);
+    }
 
     /**
      * Scope: unread messages.

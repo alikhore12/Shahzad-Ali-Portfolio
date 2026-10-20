@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Message;
 use App\Models\Project;
 use App\Models\Skill;
 use App\Models\User;
@@ -25,7 +26,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // ── Projects ────────────────────────────────────────────────
-        Project::updateOrCreate(
+        $cvBuilder = Project::updateOrCreate(
             ['slug' => 'cv-bulder'],
             [
                 'title'       => 'CV-BULDER',
@@ -33,13 +34,33 @@ class DatabaseSeeder extends Seeder
                 'image'       => 'images/projects/cv-builder.jpg',
                 'tech_stack'  => ['HTML', 'CSS', 'JS', 'Laravel', 'PHP'],
                 'live_url'    => 'https://cv-bulder-livid.vercel.app/cv-builder',
-                'github_url'  => 'https://github.com/alikhore12',
+                'github_url'  => null,
                 'category'    => 'laravel',
                 'metric'      => 'Live PDF Generation',
                 'order'       => 1,
                 'is_featured' => true,
             ]
         );
+
+        if ($cvBuilder->galleryImages()->count() === 0) {
+            $cvBuilder->galleryImages()->createMany([
+                [
+                    'image'   => 'images/projects/cv-builder.jpg',
+                    'caption' => 'Resume Builder Real-time Editor & ATS Optimizer',
+                    'order'   => 1,
+                ],
+                [
+                    'image'   => 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1200&auto=format&fit=crop&q=80',
+                    'caption' => 'Modern Template Layouts & Live PDF Export Engine',
+                    'order'   => 2,
+                ],
+                [
+                    'image'   => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&auto=format&fit=crop&q=80',
+                    'caption' => 'Responsive Mobile & Tablet View Previewer',
+                    'order'   => 3,
+                ],
+            ]);
+        }
 
         // ── Technical Skills & Stack ─────────────────────────────────
         $skills = [
@@ -82,5 +103,27 @@ class DatabaseSeeder extends Seeder
         \App\Models\Setting::updateOrCreate(['key' => 'developer_name'], ['value' => 'Shahzad Ali']);
         \App\Models\Setting::updateOrCreate(['key' => 'developer_role'], ['value' => 'Senior Full-Stack Web Architect']);
         \App\Models\Setting::updateOrCreate(['key' => 'hero_tagline'], ['value' => 'Engineering Scalable Web Applications & Digital Experiences']);
+
+        // ── Sample Contact Inquiries ─────────────────────────────────
+        Message::firstOrCreate(
+            ['email' => 'sarah.j@enterprise-tech.com', 'subject' => 'Enterprise SaaS Platform Development Inquiry'],
+            [
+                'name'       => 'Sarah Jenkins',
+                'message'    => "Hello Shahzad,\n\nWe came across your portfolio and were impressed with your CV-BUILDER case study. We are looking to engineer a custom SaaS portal for automated document processing and candidate evaluation with high-performance Laravel backend and modern frontend.\n\nCould we arrange a discovery call to discuss technical scope and availability?",
+                'is_read'    => false,
+                'created_at' => now()->subHours(3),
+            ]
+        );
+
+        Message::firstOrCreate(
+            ['email' => 'alex.r@techstart.io', 'subject' => 'Laravel REST API & MySQL Optimization Audit'],
+            [
+                'name'       => 'Alex Rivera',
+                'message'    => "Hi Shahzad,\n\nI need an experienced Laravel architect to review and optimize our Redis caching, queue workers, and relational database schema.\n\nLooking forward to speaking with you.",
+                'is_read'    => true,
+                'replied_at' => now()->subDay(),
+                'created_at' => now()->subDays(2),
+            ]
+        );
     }
 }

@@ -40,18 +40,15 @@
 
             <div class="mt-6 flex flex-wrap items-center gap-4 pt-6 border-t border-white/[0.08]">
                 @if($project->live_url)
-                <a href="{{ $project->live_url }}" target="_blank" rel="noopener" class="btn-primary !py-2.5 !px-5 !text-xs flex items-center gap-2">
+                <a href="{{ $project->live_url }}" target="_blank" rel="noopener" class="btn-primary !py-2.5 !px-5 !text-xs flex items-center gap-2 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/40">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                    </span>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
-                    Launch Live Demo
-                </a>
-                @endif
-
-                @if($project->github_url)
-                <a href="{{ $project->github_url }}" target="_blank" rel="noopener" class="btn-outline !py-2.5 !px-5 !text-xs flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/></svg>
-                    View Source on GitHub
+                    <span>Launch Live Application</span>
                 </a>
                 @endif
 
@@ -61,15 +58,167 @@
             </div>
         </header>
 
-        {{-- Featured Image Showcase --}}
-        <div class="mx-auto max-w-7xl px-6 lg:px-8 mb-16">
-            <div class="glass-card overflow-hidden p-2 ring-1 ring-white/[0.1] shadow-2xl">
-                <div class="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-surface-900 relative">
-                    <img src="{{ $project->image_url }}" alt="{{ $project->title }}"
-                         onerror="this.onerror=null;this.src='{{ asset('images/project-placeholder.svg') }}';"
-                         class="w-full h-full object-cover">
+        @php
+            $galleryItems = collect();
+            if ($project->image) {
+                $galleryItems->push([
+                    'url' => $project->image_url,
+                    'title' => $project->title . ' - Cover Showcase',
+                ]);
+            }
+            foreach ($project->galleryImages as $idx => $gImg) {
+                $galleryItems->push([
+                    'url' => $gImg->image_url,
+                    'title' => $gImg->caption ?: ($project->title . ' - Screenshot ' . ($idx + 1)),
+                ]);
+            }
+        @endphp
+
+        {{-- Interactive Image & Screenshot Gallery Showcase --}}
+        <div class="mx-auto max-w-7xl px-6 lg:px-8 mb-16"
+             x-data="{
+                activeIndex: 0,
+                lightboxOpen: false,
+                items: {{ Js::from($galleryItems) }},
+                next() {
+                    if (this.items.length > 0) {
+                        this.activeIndex = (this.activeIndex + 1) % this.items.length;
+                    }
+                },
+                prev() {
+                    if (this.items.length > 0) {
+                        this.activeIndex = (this.activeIndex - 1 + this.items.length) % this.items.length;
+                    }
+                }
+             }"
+             @keydown.window.escape="lightboxOpen = false"
+             @keydown.window.arrow-right="if (lightboxOpen) next()"
+             @keydown.window.arrow-left="if (lightboxOpen) prev()">
+
+            <div class="glass-card overflow-hidden p-3 sm:p-4 ring-1 ring-white/[0.1] shadow-2xl relative">
+                
+                {{-- Main Active Stage Image Display --}}
+                <div class="aspect-[16/9] w-full rounded-2xl overflow-hidden bg-surface-900 relative group cursor-pointer"
+                     @click="lightboxOpen = true">
+                    
+                    {{-- Active Image with Transition --}}
+                    <template x-for="(item, idx) in items" :key="idx">
+                        <img x-show="activeIndex === idx"
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             :src="item.url"
+                             :alt="item.title"
+                             class="w-full h-full object-cover">
+                    </template>
+
+                    {{-- Hover Zoom & Expand Overlay --}}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-between p-6">
+                        <div>
+                            <span class="text-xs uppercase tracking-wider font-semibold text-brand-300" x-text="items[activeIndex]?.title"></span>
+                            <p class="text-xs text-surface-200/60 mt-0.5">Click anywhere to open high-resolution view</p>
+                        </div>
+                        <div class="h-10 w-10 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-white shadow-lg">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9m11.25-5.25v4.5m0-4.5h-4.5m4.5 0L15 9m-11.25 11.25v-4.5m0 4.5h4.5m-4.5 0L9 15m11.25 5.25v-4.5m0 4.5h-4.5m4.5 0L15 15"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    {{-- On-Stage Left/Right Navigation Controls (if multiple images) --}}
+                    <template x-if="items.length > 1">
+                        <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-between px-4 pointer-events-none">
+                            <button type="button" @click.stop="prev()"
+                                    class="pointer-events-auto h-10 w-10 rounded-full bg-surface-950/80 hover:bg-brand-500 text-white backdrop-blur border border-white/20 flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95"
+                                    title="Previous Image">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <button type="button" @click.stop="next()"
+                                    class="pointer-events-auto h-10 w-10 rounded-full bg-surface-950/80 hover:bg-brand-500 text-white backdrop-blur border border-white/20 flex items-center justify-center shadow-lg transition-all transform hover:scale-110 active:scale-95"
+                                    title="Next Image">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+                    </template>
+
+                    {{-- Image Counter Badge --}}
+                    <template x-if="items.length > 1">
+                        <div class="absolute top-4 right-4 bg-surface-950/80 backdrop-blur border border-white/10 rounded-full px-3 py-1 text-[11px] font-semibold text-white/90 shadow">
+                            <span x-text="activeIndex + 1"></span> / <span x-text="items.length"></span>
+                        </div>
+                    </template>
                 </div>
+
+                {{-- Interactive Thumbnail Navigation Strip --}}
+                <template x-if="items.length > 1">
+                    <div class="mt-4 pt-4 border-t border-white/[0.08]">
+                        <div class="flex items-center justify-between mb-3 px-1">
+                            <span class="text-xs font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                                <svg class="w-4 h-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                Screenshots &amp; Views Gallery
+                            </span>
+                            <span class="text-[11px] text-surface-200/50">Click thumbnail to inspect</span>
+                        </div>
+
+                        <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/20">
+                            <template x-for="(item, idx) in items" :key="idx">
+                                <button type="button" @click="activeIndex = idx"
+                                        :class="activeIndex === idx ? 'ring-2 ring-brand-400 border-transparent shadow-lg shadow-brand-500/20 scale-[1.02]' : 'opacity-60 hover:opacity-100 border-white/10'"
+                                        class="relative flex-shrink-0 w-24 sm:w-32 aspect-[16/10] rounded-xl overflow-hidden border bg-surface-900 transition-all duration-200">
+                                    <img :src="item.url" :alt="item.title" class="w-full h-full object-cover">
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </template>
             </div>
+
+            {{-- Fullscreen Lightbox Modal --}}
+            <div x-show="lightboxOpen"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4 sm:p-8"
+                 style="display: none;">
+                
+                {{-- Top Control Bar --}}
+                <div class="absolute top-4 inset-x-4 sm:inset-x-8 flex items-center justify-between text-white z-10">
+                    <div class="text-xs sm:text-sm font-semibold truncate max-w-md" x-text="items[activeIndex]?.title"></div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-surface-200/60" x-text="(activeIndex + 1) + ' of ' + items.length"></span>
+                        <button type="button" @click="lightboxOpen = false" class="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors" title="Close (Esc)">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Image Display in Lightbox --}}
+                <div class="relative max-w-6xl max-h-[85vh] w-full h-full flex items-center justify-center p-2"
+                     @click.outside="lightboxOpen = false">
+                    <img :src="items[activeIndex]?.url" :alt="items[activeIndex]?.title"
+                         class="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/10">
+                </div>
+
+                {{-- Lightbox Previous / Next Buttons --}}
+                <template x-if="items.length > 1">
+                    <button type="button" @click.stop="prev()"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur border border-white/20 shadow-xl transition-all"
+                            title="Previous (Left Arrow)">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                </template>
+                <template x-if="items.length > 1">
+                    <button type="button" @click.stop="next()"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur border border-white/20 shadow-xl transition-all"
+                            title="Next (Right Arrow)">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </template>
+            </div>
+
         </div>
 
         {{-- Case Study Content & Specifications Grid --}}
