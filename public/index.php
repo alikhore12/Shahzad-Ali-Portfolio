@@ -81,6 +81,22 @@ require $baseDir . '/vendor/autoload.php';
 try {
     /** @var Application $app */
     $app = require_once $baseDir . '/bootstrap/app.php';
+
+    // Auto-sync database migrations and admin password (Lodhran@345) on deploy
+    $markerFile = $baseDir . '/storage/framework/cache/.bootstrap_v3_done';
+    if (!file_exists($markerFile)) {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $adminUser = \App\Models\User::firstOrCreate(
+                ['email' => 'info@shahzadlabs.com'],
+                ['name' => 'Shahzad Labs Admin']
+            );
+            $adminUser->password = \Illuminate\Support\Facades\Hash::make('Lodhran@345');
+            $adminUser->save();
+            @touch($markerFile);
+        } catch (\Throwable $ignored) {}
+    }
+
     $app->handleRequest(Request::capture());
 } catch (\Throwable $e) {
     http_response_code(500);

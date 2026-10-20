@@ -96,7 +96,21 @@ class DashboardController extends Controller
 
         $successMsg = 'Direct reply sent to ' . $message->email . ' successfully!';
         if ($mailError) {
-            $successMsg .= ' (Stored in dashboard; mail dispatch note: ' . $mailError . ')';
+            $successMsg .= ' (Reply saved to history; mail status: ' . $mailError . ')';
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $successMsg,
+                'reply'   => [
+                    'id'         => $reply->id,
+                    'subject'    => $reply->subject,
+                    'reply_body' => $reply->reply_body,
+                    'user_name'  => auth()->user()?->name ?: 'Admin',
+                    'date'       => $reply->created_at->format('M d, Y \a\t h:i A'),
+                ],
+            ]);
         }
 
         return redirect()->back()->with('success', $successMsg);
