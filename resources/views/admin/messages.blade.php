@@ -13,39 +13,39 @@
 
             {{-- Summary Badge --}}
             <div class="flex items-center gap-3">
-                <span class="text-xs px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-surface-200/70">
+                <span class="text-xs px-3.5 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-surface-200/70 whitespace-nowrap">
                     Total Inquiries: <strong class="text-white font-semibold">{{ $messages->total() }}</strong>
                 </span>
             </div>
         </div>
 
         {{-- ═══════════════════════════════════════════════════════════
-             MESSAGES TABLE (FULL WIDTH RESPONSIVE)
+             MESSAGES TABLE (FULL WIDTH & HORIZONTALLY SCROLLABLE)
         ═══════════════════════════════════════════════════════════ --}}
         <div class="glass-card overflow-hidden w-full">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
+            <div class="overflow-x-auto scrollbar-thin">
+                <table class="w-full text-left border-collapse min-w-[820px]">
                     <thead>
                         <tr class="border-b border-white/[0.08] bg-white/[0.02]">
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-surface-200/50">Status</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-surface-200/50">From</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-surface-200/50">Subject &amp; Inquiry</th>
-                            <th class="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-surface-200/50">Received</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-surface-200/50">Actions</th>
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-surface-200/50 w-[14%] min-w-[110px]">Status</th>
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-surface-200/50 w-[24%] min-w-[180px]">From</th>
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-surface-200/50 w-[34%] min-w-[260px]">Subject &amp; Inquiry</th>
+                            <th scope="col" class="py-4 px-6 text-xs font-semibold uppercase tracking-wider text-surface-200/50 w-[14%] min-w-[130px]">Received</th>
+                            <th scope="col" class="py-4 px-6 text-right text-xs font-semibold uppercase tracking-wider text-surface-200/50 w-[14%] min-w-[140px]">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/[0.04]">
                         @forelse($messages as $msg)
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             {{-- Status Badge --}}
-                            <td class="px-6 py-4 whitespace-nowrap align-middle">
+                            <td class="py-4 px-6 align-middle whitespace-nowrap">
                                 @if($msg->is_replied)
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm">
                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                         Replied
                                     </span>
                                 @elseif(!$msg->is_read)
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm">
                                         <span class="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping"></span>
                                         New
                                     </span>
@@ -56,32 +56,38 @@
                                 @endif
                             </td>
 
-                            {{-- Sender --}}
-                            <td class="px-6 py-4 align-middle whitespace-nowrap">
-                                <p class="text-sm font-semibold {{ $msg->is_read ? 'text-surface-200/80' : 'text-white' }}">{{ $msg->name }}</p>
-                                <a href="mailto:{{ $msg->email }}" class="text-xs text-brand-400/80 hover:text-brand-300 font-mono transition-colors">{{ $msg->email }}</a>
+                            {{-- Sender Info --}}
+                            <td class="py-4 px-6 align-middle">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold {{ $msg->is_read ? 'text-surface-200/80' : 'text-white' }} truncate">{{ $msg->name }}</p>
+                                    <a href="mailto:{{ $msg->email }}" class="text-xs text-brand-400/80 hover:text-brand-300 font-mono transition-colors block truncate mt-0.5" title="{{ $msg->email }}">{{ $msg->email }}</a>
+                                </div>
                             </td>
 
-                            {{-- Subject & Snippet --}}
-                            <td class="px-6 py-4 align-middle max-w-md">
-                                <a href="{{ route('admin.messages.show', $msg) }}" class="text-sm font-semibold {{ $msg->is_read ? 'text-surface-200/90' : 'text-white' }} hover:text-brand-300 transition-colors block truncate">
-                                    {{ $msg->subject }}
-                                </a>
-                                <p class="text-xs text-surface-200/50 truncate mt-1 leading-relaxed">{{ Str::limit($msg->message, 90) }}</p>
+                            {{-- Subject & Inquiry Snippet --}}
+                            <td class="py-4 px-6 align-middle">
+                                <div class="min-w-0 max-w-md">
+                                    <a href="{{ route('admin.messages.show', $msg) }}" class="text-sm font-semibold {{ $msg->is_read ? 'text-surface-200/90' : 'text-white' }} hover:text-brand-300 transition-colors block truncate" title="{{ $msg->subject }}">
+                                        {{ $msg->subject }}
+                                    </a>
+                                    <p class="text-xs text-surface-200/50 truncate mt-1 leading-relaxed" title="{{ $msg->message }}">
+                                        {{ Str::limit($msg->message, 85) }}
+                                    </p>
+                                </div>
                             </td>
 
                             {{-- Received Date --}}
-                            <td class="px-6 py-4 align-middle text-xs text-surface-200/50 whitespace-nowrap">
+                            <td class="py-4 px-6 align-middle text-xs text-surface-200/50 whitespace-nowrap">
                                 <div class="font-medium text-surface-200/70">{{ $msg->created_at->format('M d, Y') }}</div>
                                 <div class="text-[11px] text-surface-200/40 mt-0.5">{{ $msg->created_at->diffForHumans() }}</div>
                             </td>
 
                             {{-- Action Buttons --}}
-                            <td class="px-6 py-4 align-middle text-right whitespace-nowrap">
-                                <div class="flex items-center justify-end gap-2">
+                            <td class="py-4 px-6 align-middle text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-1.5">
                                     {{-- Open Message & Direct Reply --}}
                                     <a href="{{ route('admin.messages.show', $msg) }}"
-                                       class="btn-primary !text-xs !py-1.5 !px-3.5 inline-flex items-center gap-1.5 shadow-sm shadow-brand-500/20"
+                                       class="btn-primary !text-xs !py-1.5 !px-3 inline-flex items-center gap-1.5 shadow-sm shadow-brand-500/20"
                                        title="View Message and Reply">
                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
@@ -92,7 +98,7 @@
                                     {{-- 1-Click Gmail --}}
                                     <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ urlencode($msg->email) }}&su={{ urlencode('Re: ' . $msg->subject) }}"
                                        target="_blank" rel="noopener"
-                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-red-400 hover:text-red-300 border border-red-500/25 hover:bg-red-500/10 transition-colors"
+                                       class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-medium text-red-400 hover:text-red-300 border border-red-500/25 hover:bg-red-500/10 transition-colors"
                                        title="Open in Gmail Web">
                                         <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                                         <span>Gmail</span>
@@ -110,7 +116,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-16 text-center text-sm text-surface-200/40">
+                            <td colspan="5" class="py-16 px-6 text-center text-sm text-surface-200/40">
                                 <div class="flex flex-col items-center justify-center gap-2">
                                     <svg class="w-8 h-8 text-surface-200/20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
                                     <span>No messages received yet.</span>

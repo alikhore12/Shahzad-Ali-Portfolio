@@ -43,7 +43,7 @@
              ADMIN SIDEBAR
         ═══════════════════════════════════════════════════════════ --}}
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-               class="fixed inset-y-0 left-0 z-50 w-64 bg-surface-950 border-r border-white/[0.08] flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
+               class="fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-surface-950 border-r border-white/[0.08] flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0">
             
             {{-- Brand Header with dynamic Logo --}}
             <div class="h-16 flex items-center justify-between px-6 border-b border-white/[0.08] bg-surface-950/50">
@@ -193,8 +193,8 @@
         <div class="flex-1 flex flex-col min-w-0 bg-surface-950">
             
             {{-- Top Header --}}
-            <header class="h-16 sticky top-0 z-30 border-b border-white/[0.08] bg-surface-950/80 backdrop-blur-xl flex items-center justify-between px-6 lg:px-8">
-                <div class="flex items-center gap-4">
+            <header class="h-16 sticky top-0 z-30 border-b border-white/[0.08] bg-surface-950/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center gap-3 sm:gap-4">
                     {{-- Mobile Hamburger --}}
                     <button @click="sidebarOpen = true" class="lg:hidden p-2 rounded-xl text-surface-200 hover:bg-white/[0.06] transition-colors" aria-label="Open sidebar">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -208,14 +208,14 @@
                 </div>
 
                 {{-- Quick Actions --}}
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.projects.create') }}" class="btn-primary !py-2 !px-3.5 !text-xs flex items-center gap-1.5 shadow-sm">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="{{ route('admin.projects.create') }}" class="btn-primary !py-2 !px-3 sm:!px-3.5 !text-xs flex items-center gap-1.5 shadow-sm whitespace-nowrap">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                         </svg>
                         <span class="hidden sm:inline">New Project</span>
                     </a>
-                    <a href="{{ route('admin.skills.create') }}" class="btn-outline !py-2 !px-3.5 !text-xs flex items-center gap-1.5">
+                    <a href="{{ route('admin.skills.create') }}" class="btn-outline !py-2 !px-3 sm:!px-3.5 !text-xs flex items-center gap-1.5 whitespace-nowrap">
                         <svg class="w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                         </svg>
@@ -226,7 +226,7 @@
 
             {{-- Flash Alert Messages --}}
             @if(session('success'))
-            <div class="mx-auto max-w-7xl w-full px-6 pt-6 lg:px-8">
+            <div class="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 pt-6">
                 <div class="rounded-xl border border-accent-500/30 bg-accent-500/10 px-4 py-3 text-sm text-accent-300 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-accent-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -239,7 +239,7 @@
             @endif
 
             @if(session('error'))
-            <div class="mx-auto max-w-7xl w-full px-6 pt-6 lg:px-8">
+            <div class="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 pt-6">
                 <div class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 flex items-center gap-2">
                     <svg class="w-5 h-5 text-red-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
@@ -250,12 +250,12 @@
             @endif
 
             {{-- Main Page Content --}}
-            <main class="flex-1 mx-auto max-w-7xl w-full px-6 py-8 lg:px-8">
+            <main class="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 min-w-0">
                 @yield('content')
             </main>
 
             {{-- Admin Footer --}}
-            <footer class="border-t border-white/[0.06] py-4 px-6 lg:px-8 text-center text-xs text-surface-200/40">
+            <footer class="border-t border-white/[0.06] py-4 px-4 sm:px-6 lg:px-8 text-center text-xs text-surface-200/40">
                 &copy; {{ date('Y') }} Shahzad Labs Administration &bull; High-Performance Digital Studio
             </footer>
         </div>

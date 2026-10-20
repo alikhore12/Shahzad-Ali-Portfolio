@@ -150,4 +150,21 @@
         opacity: 1;
         transform: translateY(0);
     }
+
+    /* ── Table Horizontal Scrollbar ────────────────────────────── */
+    .scrollbar-thin::-webkit-scrollbar {
+        height: 6px;
+        width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.5);
+    }
 }
+
