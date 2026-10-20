@@ -62,6 +62,43 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+
+        // ── ThinkCode Management System (CRM) ───────────────
+        $thinkCrm = Project::updateOrCreate(
+            ['slug' => 'thinkcode-crm'],
+            [
+                'title'       => 'ThinkCode CRM — Enterprise Institute & Task Management System',
+                'description' => "Project Description: ThinkCode Management System\n\n📌 Project Overview:\nThinkCode Management System is a comprehensive, production-grade enterprise software house and institute CRM engineered with Laravel 11, robust RESTful APIs, and Flutter mobile application architecture.\n\n⚡ Key Architecture and Features:\n• Multi-Role Polymorphic Authentication: Granular access control for Super Admin, Admin, Teachers, Students, and Interns.\n• Smart Attendance Engine: Dual-validation check-in using QR Code scanning and GPS Geofencing location tracking for anti-fraud accuracy.\n• Interactive Task Management Workflow: Life-cycle task tracking (Pending -> In Progress -> Submitted -> Under Review -> Completed/Rejected) with file submissions and multi-round grading.\n• Automated Fee and Installment Management: Dynamic course fee structures, installment tracking, late fee calculations, and transaction receipts.\n• Push Notifications and Audit Logs: Complete system activity log history with real-time alerting for submissions and reviews.",
+                'image'       => 'images/projects/thinkcode-crm.jpg',
+                'tech_stack'  => ['Laravel 11', 'PHP 8.3', 'MySQL', 'REST APIs', 'Flutter', 'Docker', 'Tailwind CSS'],
+                'live_url'    => 'https://thinkcrm.shahzadlabs.com',
+                'github_url'  => null,
+                'category'    => 'saas',
+                'metric'      => 'QR Attendance & Multi-Role SaaS Engine',
+                'order'       => 2,
+                'is_featured' => true,
+            ]
+        );
+
+        if ($thinkCrm->galleryImages()->count() === 0) {
+            $thinkCrm->galleryImages()->createMany([
+                [
+                    'image'   => 'images/projects/thinkcode-crm.jpg',
+                    'caption' => 'ThinkCode CRM Executive Dashboard & Real-Time Analytics',
+                    'order'   => 1,
+                ],
+                [
+                    'image'   => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&auto=format&fit=crop&q=80',
+                    'caption' => 'Comprehensive Reporting, Finance & Performance Metrics',
+                    'order'   => 2,
+                ],
+                [
+                    'image'   => 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=1200&auto=format&fit=crop&q=80',
+                    'caption' => 'Attendance Geofencing, Batch Scheduling & Mobile Workflow',
+                    'order'   => 3,
+                ],
+            ]);
+        }
         // ── Technical Skills & Stack ─────────────────────────────────
         $skills = [
             // Backend
