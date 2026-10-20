@@ -23,9 +23,9 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-surface-950 text-surface-200 font-sans antialiased selection:bg-brand-500/30">
+<body class="bg-surface-950 text-surface-200 font-sans antialiased selection:bg-brand-500/30 overflow-x-hidden w-full max-w-full">
 
-    <div x-data="{ sidebarOpen: false }" class="min-h-screen flex">
+    <div x-data="{ sidebarOpen: false }" class="min-h-screen flex w-full max-w-full overflow-x-hidden">
 
         {{-- Mobile Sidebar Backdrop --}}
         <div x-show="sidebarOpen"
@@ -190,10 +190,10 @@
         {{-- ═══════════════════════════════════════════════════════════
              MAIN CONTENT WRAPPER
         ═══════════════════════════════════════════════════════════ --}}
-        <div class="flex-1 flex flex-col min-w-0 bg-surface-950">
+        <div class="flex-1 flex flex-col min-w-0 w-full max-w-full overflow-x-hidden bg-surface-950">
             
             {{-- Top Header --}}
-            <header class="h-16 sticky top-0 z-30 border-b border-white/[0.08] bg-surface-950/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6 lg:px-8">
+            <header class="h-16 sticky top-0 z-30 border-b border-white/[0.08] bg-surface-950/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6 lg:px-8 w-full max-w-full">
                 <div class="flex items-center gap-3 sm:gap-4">
                     {{-- Mobile Hamburger --}}
                     <button @click="sidebarOpen = true" class="lg:hidden p-2 rounded-xl text-surface-200 hover:bg-white/[0.06] transition-colors" aria-label="Open sidebar">
@@ -250,7 +250,7 @@
             @endif
 
             {{-- Main Page Content --}}
-            <main class="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 min-w-0">
+            <main class="flex-1 mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 min-w-0 max-w-full">
                 @yield('content')
             </main>
 

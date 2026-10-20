@@ -166,5 +166,21 @@
     .scrollbar-thin::-webkit-scrollbar-thumb:hover {
         background: rgba(99, 102, 241, 0.5);
     }
+
+    /* ── Overflow and Table Containment Utilities ───────────────── */
+    .table-fixed-contained {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table-fixed-contained th,
+    .table-fixed-contained td {
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+    .break-anywhere {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
 }
 
